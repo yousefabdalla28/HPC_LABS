@@ -36,7 +36,7 @@ int main()
 	if (rank == 0) {
 		/*for (int i = 0; i < size; i++)
 		{
-			result += sums[j]; // when you using Gather
+			result += sums[i]; // when you using Gather
 		}*/
 
 		for (int i = (100 / size) * size; i < 100; i++) {
