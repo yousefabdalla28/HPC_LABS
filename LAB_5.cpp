@@ -13,7 +13,7 @@ int main()
 	int sum0 = 0;
 	int sum1 = 0;
 	int sum2 = 0;
-	int totalsum = 0;
+	int totalSum = 0;
 	if (rank == 0) {
 		MPI_Status stat;
 		int data[15] = { 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 };
@@ -25,8 +25,8 @@ int main()
 		MPI_Send(&data[10], 5, MPI_INT, 2, 0, MPI_COMM_WORLD);
 		MPI_Recv(&sum1, 1, MPI_INT, 1, 0, MPI_COMM_WORLD,&stat);
 		MPI_Recv(&sum2, 1, MPI_INT, 2, 0, MPI_COMM_WORLD, &stat);
-		totalsum = sum0 + sum1 + sum2;
-		cout << "Total sum is  " << totalsum << endl;
+		totalSum = sum0 + sum1 + sum2;
+		cout << "Total sum is  " << totalSum << endl;
 
 	}
 	if (rank == 1) {
