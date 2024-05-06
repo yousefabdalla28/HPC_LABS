@@ -1,6 +1,7 @@
 /*
  x,y are arrays from 1 to 50
  sum i=1 to n (x^2*y)
+ run your code with only 5 processors
 */
 #include <iostream>
 #include <mpi.h>
@@ -16,24 +17,22 @@ int main()
     int N, localSum = 0, result;
     int x[50];
     int y[50];
+    int localX[10];
+    int localY[10];
     if (rank == 0) {
         for (int i = 0; i < 50; i++) { 
             x[i] = i + 1;
             y[i] = i + 1;
         }
-        cout << "Enter value for N" << endl;
-        cin >> N;
     }
     MPI_Bcast(&N,1,MPI_INT,0,MPI_COMM_WORLD);
-    int length = N / 5;
-    for (int i = (rank * length) + 1; i <= (rank + 1) * length; i++) {
-        localSum += (x[i] * x[i]) * y[i];
+    MPI_Scatter(&x,10,MPI_INT,localX,10,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Scatter(&y, 10, MPI_INT, localY,10, MPI_INT, 0, MPI_COMM_WORLD);
+    for (int i = 0; i < 10 / size; i++) {
+        localSum += (localX[i] * localX[i]) * localY[i];
     }
     MPI_Reduce(&localSum, &result, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
     if (rank == 0) {
-        for (int i = (size * length) + 1; i <= N; i++) {
-            result += (x[i] * x[i]) * y[i];
-        }
         cout << "Result is = " << result << endl;
     }
     MPI_Finalize();
