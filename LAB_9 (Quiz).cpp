@@ -27,6 +27,11 @@ int main() {
 		for (int i = (size * length) + 1; i <= N; i++) {
 			result += (3 - 2 * i) * (3 - 2 * i);
 		}
+		/* or
+		int reminder = N - (N % size);
+		for (int i = reminder+1; i <= N; i++) {
+			result += (3 - 2 * i) * (3 - 2 * i);
+		}*/
 		cout << "Result is = " << result<<endl;
 	}
 
