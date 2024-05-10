@@ -8,48 +8,64 @@
 // All ranks must search for the target 
 // At least 3 ranks
 
-#include <stdio.h>
-#include<iostream>
+#include <iostream>
 #include <mpi.h>
-using namespace std;
-int main() {
-	MPI_Init(NULL, NULL);
-	int rank, size;
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	MPI_Comm_size(MPI_COMM_WORLD, &size);
-	int arr[150];
-	int num;
-	if (rank == 0) {
-		for (int i = 0; i < 150; i++) {
-			arr[i] = i ;
-		}
-		cout << "Enter any num between 0 and 149" << endl;
-		cin >> num;
-	}
-	MPI_Bcast(&num, 1, MPI_INT, 0, MPI_COMM_WORLD);
-	int localArr[50];
+#include <stdio.h>
 
-	int found = 0;
-	int the_rank = 0;
-	int x = 1;
-	MPI_Scatter(&arr,50,MPI_INT,&localArr,50,MPI_INT,0,MPI_COMM_WORLD);
-	for (int i = 0; i < 50; i++) {
-		if (num = localArr[i]) {
-			if (rank == 0) {
-				x = 0;
-			}
-		found = rank;
-		}
-	}
-	MPI_Reduce(&found,&the_rank,1,MPI_INT,MPI_SUM,0,MPI_COMM_WORLD);
-	if (rank == 0) {
-		if (the_rank != 0 || x == 0) {
-			cout << "The rank is " << the_rank;
-		}
-		else {
-			cout << "-1" << endl;
-		}
-	}
-	MPI_Finalize();
-	return 0;
+using namespace std;
+
+int main(int argc, char** argv)
+{
+    //On 3 processors "-n 3"
+    MPI_Init(NULL, NULL);
+
+    int size, rank;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    int arr[150];
+    int N;
+
+    if (rank == 0)
+    {
+        for (int i = 0; i < 150; i++)
+            arr[i] = i;
+
+        cout << "Enter any number to search" << endl;
+        cin >> N;
+    }
+
+    MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    int recv[50];
+
+    MPI_Scatter(arr, 50, MPI_INT, recv, 50, MPI_INT, 0, MPI_COMM_WORLD);
+
+
+    int found = 0;
+    int The_rank = 0;
+    int x = 1;
+
+    for (int i = 0; i < 50; i++)
+    {
+        if (N == recv[i])
+        {
+            if (rank == 0)
+                x = 0;
+            found = rank;
+        }
+    }
+
+    MPI_Reduce(&found, &The_rank, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+
+    if (rank == 0)
+    {
+        if (The_rank != 0 || x == 0)
+            cout << "Number found at rank " << The_rank << endl;
+        else
+            cout << "-1" << endl;
+    }
+
+    MPI_Finalize();
+    return 0;
 }
