@@ -14,7 +14,7 @@ int main()
 	// intialize MPI
 	MPI_Init(NULL, NULL);
 
-	int rank,size;
+	int rank, size;
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -57,9 +57,9 @@ int main()
 	{
 
 		// handling the remainders
-		int remainder = N - (N % size);
+		int reminder = N - (N % size);
 
-		for (int i = remainder; i < N; i++)
+		for (int i = reminder; i < N; i++)
 		{
 			result[i] = A[i] + B;
 		}
