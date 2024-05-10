@@ -7,65 +7,69 @@
 //    . Target = 200 print--> -1
 // All ranks must search for the target 
 // At least 3 ranks
-
 #include <iostream>
 #include <mpi.h>
-#include <stdio.h>
-
 using namespace std;
-
-int main(int argc, char** argv)
+int main()
 {
-    //On 3 processors "-n 3"
-    MPI_Init(NULL, NULL);
+	MPI_Init(NULL, NULL);
 
-    int size, rank;
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	int rank,size;
+	MPI_Comm_size(MPI_COMM_WORLD, &size);
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-    int arr[150];
-    int N;
+	int arr[150];
+	int target;
 
-    if (rank == 0)
-    {
-        for (int i = 0; i < 150; i++)
-            arr[i] = i;
+	if (rank == 0)
+	{
+		// initialize array with numbers from 0 to 149
+		for (int i = 0; i < 150; i++)
+		{
+			arr[i] = i;
+		}
+		cout << "Enter the target number: ";
+		cin >> target;
+	}
 
-        cout << "Enter any number to search" << endl;
-        cin >> N;
-    }
+	MPI_Bcast(&target, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-    MPI_Bcast(&N, 1, MPI_INT, 0, MPI_COMM_WORLD);
+	int length = 150 / size;
+	int* localarr = new int[length];
 
-    int recv[50];
+	MPI_Scatter(&arr, length, MPI_INT, localarr, length, MPI_INT, 0, MPI_COMM_WORLD);
 
-    MPI_Scatter(arr, 50, MPI_INT, recv, 50, MPI_INT, 0, MPI_COMM_WORLD);
+	int found = -1;
+	for (int i = 0; i < length; i++)
+	{
+		if (localarr[i] == target)
+		{
+			found = rank;
+			break;
+		}
+	}
+	int r;
+	MPI_Reduce(&found, &r, 1, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
 
-
-    int found = 0;
-    int The_rank = 0;
-    int x = 1;
-
-    for (int i = 0; i < 50; i++)
-    {
-        if (N == recv[i])
-        {
-            if (rank == 0)
-                x = 0;
-            found = rank;
-        }
-    }
-
-    MPI_Reduce(&found, &The_rank, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
-
-    if (rank == 0)
-    {
-        if (The_rank != 0 || x == 0)
-            cout << "Number found at rank " << The_rank << endl;
-        else
-            cout << "-1" << endl;
-    }
-
-    MPI_Finalize();
-    return 0;
+	if (rank == 0)
+	{
+		// handling the remainder of the array
+		int reminder = 150 - (150 % size);
+		for (int i = reminder; i < 150; i++)
+		{
+			if (arr[i] == target)
+			{
+				r = rank;
+				break;
+			}
+		}
+		if (r >= 0) {
+			cout << "Number found at rank " << r << endl;
+		}
+		else
+		{
+			cout << "-1" << endl;
+		}
+	}
+	MPI_Finalize();
 }
