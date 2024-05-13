@@ -12,6 +12,10 @@ namespace SecurityLibrary.DES
     public class DES : CryptographicTechnique
     {
         readonly int[,] PC_1 = new int[8, 7] {
+        // permutation , selection
+        // make key 56 bit
+        // divide into two blocks C0(28),D0(28)
+        // then leftShift
                 { 57, 49, 41, 33, 25, 17, 9 },
                 { 1, 58, 50, 42, 34, 26, 18 },
                 { 10, 2, 59, 51, 43, 35, 27 },
@@ -21,6 +25,7 @@ namespace SecurityLibrary.DES
                 { 14, 6, 61, 53, 45, 37, 29 },
                 { 21, 13, 5, 28, 20, 12, 4 } };
         readonly int[,] PC_2 = new int[8, 6] {
+        //make key 48 bit
                 { 14, 17, 11, 24, 1, 5 },
                 { 3, 28, 15, 6, 21, 10 },
                 { 23, 19, 12, 4, 26, 8 },
@@ -39,6 +44,7 @@ namespace SecurityLibrary.DES
                 { 19, 13, 30, 6 },
                 { 22, 11, 4, 25 } };
         readonly int[,] EB = new int[8, 6] {
+        //expansion --> repeat some bits and permute
                 { 32, 1, 2, 3, 4, 5 },
                 { 4, 5, 6, 7, 8, 9  },
                 { 8, 9, 10, 11, 12, 13 },
@@ -48,6 +54,7 @@ namespace SecurityLibrary.DES
                 { 24, 25, 26, 27, 28, 29 },
                 { 28, 29, 30, 31, 32, 1  } };
         readonly int[,] IP = new int[8, 8] {
+        // 64 bit P.T
                 { 58, 50, 42, 34, 26, 18, 10, 2 },
                 { 60, 52, 44, 36, 28, 20, 12, 4 },
                 { 62, 54, 46, 38, 30, 22, 14, 6 },
@@ -68,6 +75,8 @@ namespace SecurityLibrary.DES
 
         int[,,] SBoxes = new int[8, 4, 16]
          {
+         // 8 s-boxes 
+         // 
             {
                { 14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7 },
                { 0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8 },
