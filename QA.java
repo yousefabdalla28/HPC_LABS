@@ -169,3 +169,58 @@ public class Windows_61 {
         driver.switchTo().window(parenWindow);
     }
 }
+
+
+//TestNG
+
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.testng.Assert;
+import org.testng.annotations.*;
+
+public class Hand2 {
+    WebDriver driver;
+
+    @BeforeMethod
+    @Parameters("browser")
+    public void setup(String browser){
+        WebDriverManager.edgedriver().setup();
+        if(browser.equalsIgnoreCase("Microsoft Edge")){
+            driver =new EdgeDriver();
+        } else if (browser.equalsIgnoreCase("Internet Explorer")) {
+            driver=new InternetExplorerDriver();
+        }
+        driver.get("https://demo.guru99.com/test/login.html");
+        driver.manage().window().maximize();
+    }
+    @AfterMethod
+    public void quit(){
+        driver.quit();
+    }
+    @DataProvider(name = "LoginData")
+    public Object[][] getLoginData(){
+        return new Object[][]{{"test@gmail.com","Invalid email or password","Invalid"},
+                {"test@mail.com","152","https://demo.guru99.com/test/success.html","Calid"}};
+    }
+    @Test(dataProvider = "LoginData")
+    public void f(String UN,String pass, String expected,String CaseType) throws InterruptedException {
+        WebElement username=driver.findElement(By.id("email"));
+        WebElement password=driver.findElement(By.id("passwd"));
+        WebElement loginBtn=driver.findElement(By.id("SubmitLogin"));
+        username.sendKeys(UN);
+        password.sendKeys(pass);
+        loginBtn.submit();
+        if(CaseType.equalsIgnoreCase("Valid")){
+            Thread.sleep(6000);
+            String ActualURL=driver.getCurrentUrl();
+            Assert.assertEquals("Valid URL navigation",expected,ActualURL);
+        }
+
+
+    }
+
+}
